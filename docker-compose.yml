@@ -1,0 +1,48 @@
+version: "3.9"
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  frontend:
+    image: avanesyanara/k8s-learning-front
+    container_name: frontend
+    pull_policy: never
+    ports:
+      - "80:80"
+
+  backend:
+    image: avanesyanara/k8s-learning-back
+    pull_policy: never
+    container_name: backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - frontend
+      - db
+    healthcheck:
+      test: "curl --fail http://localhost:8080/actuator/health || exit 1"
+      interval: 10s
+      retries: 2
+      timeout: 2s
+
+  db:
+    image: postgres:11
+    container_name: pg
+    environment:
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: "pg_isready"
+      interval: 10s
+      timeout: 3s
+      retries: 3

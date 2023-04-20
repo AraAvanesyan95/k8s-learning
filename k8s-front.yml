@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-k8s-front
+  labels:
+    app-name: k8s-learning-front
+spec:
+  selector:
+    app-name: k8s-learning-front
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-front
+  labels:
+    app-name: k8s-learning-front
+spec:
+  selector:
+    matchLabels:
+      app-name: k8s-learning-front
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app-name: k8s-learning-front
+    spec:
+      containers:
+        - name: front
+          image: avanesyanara/k8s-learning-front
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 80
