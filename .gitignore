@@ -9,3 +9,5 @@
 
 /back/**/*
 /front/**/*
+!/front/Dockerfile
+!/back/Dockerfile
